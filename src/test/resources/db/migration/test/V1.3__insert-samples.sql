@@ -1,0 +1,1 @@
+Insert into enterprises (name_enterprise, foundation_date) values ('Sample', '1999-01-01'), ('Sample 2', '1999-01-01');
