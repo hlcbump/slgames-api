@@ -23,24 +23,39 @@ import com.slgames.store.dtos.users.UserDTOFactory;
 import com.slgames.store.model.User;
 import com.slgames.store.model.services.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.Getter;
 
 @RestController
 @RequestMapping("/user")
 @Getter
+@Tag(name = "/user", description = "This is the endpoint to manipulate and acess users data.")
 public class UserController {
 
 	@Autowired
 	private UserService service;
 	
 	@GetMapping
+	@Operation(summary = "Return all users stored on the API, showing a Default DTO object of them.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Show all users data stored.")
+	})
 	public ResponseEntity<List<DefaultResponseUserDTO>> findAll() {
 		return ResponseEntity.ok(getService().findAll().stream()
 				.map(user -> (DefaultResponseUserDTO) UserDTOFactory.createDTO(user, TypeDTO.DEFAULT)).toList());
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(summary = "Return a specific user based on your ID. If not exists, will return HTTP status 404. Note that the sensive data isn't showed.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Show the user data."),
+			@ApiResponse(responseCode = "404", description = "Not found.")
+	})
 	public ResponseEntity<?> findById(@PathVariable Long id){
 		Optional<User> optional = getService().findById(id);
 		if (optional.isPresent()) {
@@ -51,6 +66,14 @@ public class UserController {
 	}
 	
 	@PostMapping
+	@Transactional
+	@Operation(summary = "Insert a new user in the database.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description="The user is created in the database"),
+			@ApiResponse(responseCode = "400", description="User data isn't allowed. Some reasons are: "
+					+ "\n - Empty email and/or password;"
+					+ "\n - Existing email is provided.")
+	})
 	public ResponseEntity<?> insertUser(@RequestBody @Valid InsertUserDTO dto, UriComponentsBuilder builder){
 		User user = getService().createUser(dto);
 		var uri = builder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
@@ -58,6 +81,14 @@ public class UserController {
 	}
 	
 	@PutMapping
+	@Transactional
+	@Operation(summary = "Update the data of a user.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode="200", description="The user data was updated."), 
+			@ApiResponse(responseCode="400", description="Could occur when Id is not provided."),
+			@ApiResponse(responseCode="404", description="The ID was not found in the database."),
+			@ApiResponse(responseCode="500", description="Could occur when email/nickname/password is updated with a existing value.")
+	})
 	public ResponseEntity<?> updateUser(@RequestBody UpdateUserDTO dto){
 		User user = getService().updateUser(dto);
 		if (user != null) {
@@ -68,6 +99,12 @@ public class UserController {
 	}
 	
 	@DeleteMapping("/{id}")
+	@Transactional
+	@Operation(summary = "Delete a user based on your Id.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "The user was deleted sucessfuly."),
+			@ApiResponse(responseCode = "404", description = "The user doesn't exist.")
+	})
 	public ResponseEntity<?> deleteUser(@PathVariable Long id){
 		if (getService().deleteUser(id)) {
 			return ResponseEntity.noContent().build();

@@ -30,9 +30,14 @@ public class UserService {
 	
 	public User createUser(InsertUserDTO dto) {
 		User user = new User(dto);
-		User saved = getRepository().save(user);
-		System.out.println(saved);
-		return saved;
+		validateUserInformation(user);
+		return getRepository().save(user);
+	}
+
+	private void validateUserInformation(User user) {
+		if (getRepository().existsByEmail(user.getEmail()) || 
+				getRepository().existsByNickname(user.getNickname()) ||
+				getRepository().existsByPassword(user.getPassword())) throw new IllegalArgumentException("User data already exists on database.");
 	}
 
 	public User updateUser(UpdateUserDTO dto) {

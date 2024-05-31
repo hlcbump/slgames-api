@@ -6,4 +6,8 @@ import com.slgames.store.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 
+	public boolean existsByNickname(String nickname);
+	public boolean existsByEmail(String email);
+	public boolean existsByPassword(String password);
+	
 }

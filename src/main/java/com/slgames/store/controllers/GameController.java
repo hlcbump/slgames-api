@@ -21,6 +21,10 @@ import com.slgames.store.dtos.game.UpdateGameDTO;
 import com.slgames.store.model.Game;
 import com.slgames.store.model.services.GameService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.Getter;
@@ -28,18 +32,26 @@ import lombok.Getter;
 @RestController
 @RequestMapping("/game")
 @Getter
+@Tag(name = "/game", description = "This is the endpoint to manipulate and acess games data.")
 public class GameController {
 	
 	
 	@Autowired
 	private GameService service;
-	
+	@Operation(summary = "Return all games stored on the API, showing a Default DTO object of them.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Show all games data stored.")
+	})
 	
 	@GetMapping
 	public ResponseEntity<?> findAllGames(){
 		return ResponseEntity.ok(getService().findAll());
 	}
-	
+	@Operation(summary = "Return a specific game based on your ID. If not exists, will return HTTP status 404.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Show the game data."),
+			@ApiResponse(responseCode = "404", description = "Not found.")
+	})
 	@GetMapping("/{id}")
 	public ResponseEntity<Game> findGameById(@PathVariable Long id){
 		return ResponseEntity.of(getService().findById(id));
@@ -47,6 +59,17 @@ public class GameController {
 	
 	@PostMapping
 	@Transactional
+	@Operation(summary = "Insert a new game in the database.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description= "The game data provided is created." ),
+			@ApiResponse(responseCode = "400", description= "The game data is not allowed. The possible reasons to it is: "
+					+ "\n - Name provided already exists;"
+					+ "\n- Devloper id doesn't exist;"
+					+ "\n- Publisher id doesn't exist;"
+					+ "\n- Price is negative;"
+					+ "\n - Some Genre is wrong;"
+					+ "\n - The date is in the future.")
+	})
 	public ResponseEntity<?> insertGame(@RequestBody @Valid InsertGameDTO gameDto, UriComponentsBuilder builder){
 			Game game = getService().createGame(gameDto);
 			var uri = builder.path("/game/{id}").buildAndExpand(game.getId()).toUri();
@@ -54,6 +77,12 @@ public class GameController {
 	}
 	@PutMapping
 	@Transactional
+	@Operation(summary = "Update the data of a game.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode="200", description="The game data was updated."), 
+			@ApiResponse(responseCode="400", description="Could occur when Id is not provided."),
+			@ApiResponse(responseCode="404", description="The ID was not found in the database.")
+	})
 	public ResponseEntity<?> updateGame(@RequestBody @Valid UpdateGameDTO gameDto){
 		Game game = getService().update(gameDto);
 		if (game != null) {
@@ -65,6 +94,11 @@ public class GameController {
 	
 	@DeleteMapping("/{id}")
 	@Transactional
+	@Operation(summary = "Delete a game based on your Id.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "The game was deleted sucessfuly."),
+			@ApiResponse(responseCode = "404", description = "The game doesn't exist.")
+	})
 	public ResponseEntity<?> deleteGame(@PathVariable Long id){
 		if (getService().delete(id)) return ResponseEntity.noContent().build();
 		else return ResponseEntity.notFound().build();

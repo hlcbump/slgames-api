@@ -110,7 +110,7 @@ public class GameControllerUnitTest {
 	}
 	
 	@Test
-	@DisplayName("Should return status code Created when a negative price is sent")
+	@DisplayName("Should return status code Bad Request when a negative price is sent")
 	void testInsertGameReturnBadRequestWhenNegativePriceIsSent() throws Exception {
 		InsertGameDTO insertDto = new InsertGameDTO("Sample" ,LocalDate.now().minusMonths(1), -33.21, 1L, 2L, Set.of(new GenreDTO(GenreName.TERROR)));
 		when(service.createGame(insertDto)).thenThrow(new IllegalArgumentException("Price must be not negative"));

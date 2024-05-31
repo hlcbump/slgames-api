@@ -19,9 +19,11 @@ public class ErrorHandler {
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<?> retriveCannotDelete(DataIntegrityViolationException ex){
 		String mes = ex.getLocalizedMessage();
-		if (mes.contains("enterprises") && mes.contains("constraint")) {
+		if (mes.contains("enterprises") && mes.contains("games")) {
 			mes = "Cannot delete enterprise because there are games referenced to it";
-		}
+		} else if (mes.contains("enterprises") && mes.contains("name")){
+			mes = "Cannot update enterprise name with the provided value, because the name already exists.";
+		} else if (mes.contains("users")) mes = "Some data provided already exist on database";
 		return ResponseEntity.internalServerError().body(new ExceptionBody(mes));
 	}
 	
