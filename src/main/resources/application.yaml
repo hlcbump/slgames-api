@@ -3,7 +3,7 @@ spring:
   application:
     name: Slgames
   datasource:
-    url: jdbc:mysql://172.18.0.2:3306/slgames
+    url: jdbc:mysql://localhost:3306/slgames
     username: root
     password: root
 server:
