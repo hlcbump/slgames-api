@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Jogos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Lista de Jogos</h1>
+    <button id="add-game-btn">Adicionar Jogo</button>
+    <ul id="games-list"></ul>
+
+    <div id="add-game-popup" class="popup">
+        <div class="popup-content">
+            <span id="close-popup" class="close">&times;</span>
+            <h2>Adicionar Novo Jogo</h2>
+            <form id="add-game-form">
+                <label for="title">Título:</label>
+                <input type="text" id="title" name="title" required><br>
+                <label for="launchDate">Data de Lançamento:</label>
+                <input type="date" id="launchDate" name="launchDate" required><br>
+                <label for="price">Preço:</label>
+                <input type="number" id="price" name="price" required><br>
+                <label for="genre">Gênero:</label>
+                <select id="genre" name="genre" required>
+                    <option value="">Selecione um gênero</option>
+                    <option value="RPG">RPG</option>
+                    <option value="FPS">FPS</option>
+                    <option value="ADVENTURE">ADVENTURE</option>
+                    <option value="TERROR">TERROR</option>
+                    <option value="PUZZLE">PUZZLE</option>
+                    <option value="RACE">RACE</option>
+                    <option value="SCI_FI">SCI-FI</option>
+                    <option value="ACTION">ACTION</option>
+                </select><br>
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

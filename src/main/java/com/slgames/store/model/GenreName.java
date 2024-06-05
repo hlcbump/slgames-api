@@ -8,5 +8,6 @@ public enum GenreName {
 	TERROR,
 	SCI_FI,
 	RACE,
-	PUZZLE
+	PUZZLE,
+	ADVENTURE
 }
